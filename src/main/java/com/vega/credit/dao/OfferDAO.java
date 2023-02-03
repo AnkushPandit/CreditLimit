@@ -57,7 +57,7 @@ public class OfferDAO {
     public void addOffer(Offer offer) {
         try {
             String insertQuery =
-                    String.format("insert into %s(account_id, offer_id, limit_type, new_limit, offer_activation_time" +
+                    String.format("insert into %s(account_id, offer_id, limit_type, new_limit, offer_activation_time, " +
                                     "offer_expiry_time, offer_status) values('%s','%s','%s','%s','%s','%s','%s');",
                             tableName, offer.getAccountId(), offer.getOfferId(), offer.getLimitType().getLimitType(),
                             offer.getNewLimit(), offer.getOfferActivationTime(), offer.getOfferExpiryTime(),

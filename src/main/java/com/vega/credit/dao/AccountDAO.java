@@ -30,7 +30,7 @@ public class AccountDAO {
         try {
             String query = String.format("select * from %s where account_id = '%s';", tableName, accountId);
             resultSet = statement.executeQuery(query);
-            if (resultSet.isBeforeFirst()) {
+            if (!resultSet.isBeforeFirst()) {
                 return null;
             }
             resultSet.next();

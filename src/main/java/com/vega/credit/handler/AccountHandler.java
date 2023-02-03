@@ -1,12 +1,13 @@
 package com.vega.credit.handler;
 
-import com.vega.credit.Repository.AccountDAO;
+import com.vega.credit.dao.AccountDAO;
 import com.vega.credit.model.Account;
 import com.vega.credit.util.DateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class AccountHandler {
@@ -14,16 +15,12 @@ public class AccountHandler {
     private AccountDAO accountDAO;
 
     public Account fetchAccountInformation(String accountId) {
-        List<Account> accounts = accountDAO.getAccount(accountId);
-        if(accounts.size() == 0) {
+        Account account = accountDAO.getAccount(accountId);
+        if(!Optional.ofNullable(account).isPresent()) {
             System.out.printf("No account with account id: %s is found%n", accountId);
             return null;
         }
-        if (accounts.size() > 1) {
-            System.out.printf("More than one account with account id %s is found", accountId);
-            return null;
-        }
-        return accounts.get(0);
+        return account;
     }
 
     public String createAccount(String customerId, int accountLimit, int perTransactionLimit) {

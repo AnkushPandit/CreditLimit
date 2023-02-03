@@ -1,13 +1,12 @@
 package com.vega.credit.util;
 
-import com.vega.credit.Repository.AccountDAO;
+import com.vega.credit.dao.AccountDAO;
 import com.vega.credit.model.Account;
 import com.vega.credit.model.Offer;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.xml.bind.ValidationException;
-import java.util.List;
 import java.util.Optional;
 
 import static com.vega.credit.enums.LimitType.ACCOUNT_LIMIT;
@@ -24,11 +23,10 @@ public class ValidateOffer {
             throw new ValidationException("Offer must have an associated account Id");
         }
 
-        List<Account> accountList = accountDAO.getAccount(accountId);
-        if(accountList.size() != 1) {
+        Account account = accountDAO.getAccount(accountId);
+        if(!Optional.ofNullable(account).isPresent()) {
             throw new ValidationException("No valid account is present for this account Id");
         }
-        Account account = accountList.get(0);
 
         if(ACCOUNT_LIMIT.equals(offer.getLimitType())) {
             if(offer.getNewLimit() <= account.getAccountLimit()) {

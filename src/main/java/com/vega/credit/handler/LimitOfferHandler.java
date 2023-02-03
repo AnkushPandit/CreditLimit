@@ -1,6 +1,8 @@
 package com.vega.credit.handler;
 
+import com.vega.credit.dao.AccountDAO;
 import com.vega.credit.dao.OfferDAO;
+import com.vega.credit.enums.LimitType;
 import com.vega.credit.enums.OfferStatus;
 import com.vega.credit.model.Offer;
 import com.vega.credit.util.DateTimeUtil;
@@ -17,6 +19,9 @@ public class LimitOfferHandler {
     @Autowired
     OfferDAO offerDAO;
 
+    @Autowired
+    AccountDAO accountDAO;
+
     public String createLimitOffer(Offer offer) throws ValidationException {
         ValidateOffer.checkOfferValidity(offer);
 
@@ -32,10 +37,29 @@ public class LimitOfferHandler {
         if(!DateTimeUtil.isValidDate(activationDate)) {
             throw new ValidationException("Not a valid date format");
         }
-        return offerDAO.getActiveOffers(accountId, activationDate);
+        return offerDAO.getActiveOffers(accountId, DateTimeUtil.stringToLocalDate(activationDate));
     }
 
     public void updateOfferStatus(@NonNull String offerId, @NonNull OfferStatus newStatus) {
-        offerDAO.modifyOfferStatus(offerId, newStatus);
+        boolean offerModified = false;
+        boolean accountModified = true;
+        try {
+            offerDAO.modifyOfferStatus(offerId, newStatus);
+            offerModified = true;
+            if(OfferStatus.ACCEPT.equals(newStatus)) {
+                accountModified = false;
+                String accountId = offerDAO.getOfferDetails(offerId, "account_id");
+                LimitType limitType = LimitType.valueOf(offerDAO.getOfferDetails(offerId, "limit_type"));
+                int newLimit = Integer.parseInt(offerDAO.getOfferDetails(offerId, "newLimit"));
+                accountDAO.updateAccountLimit(accountId, limitType, newLimit);
+                accountModified = true;
+            }
+        } catch (IllegalArgumentException e) {
+            /* If Account update fails after offer update, Revert back the offer status to maintain consistency */
+            if(offerModified && !accountModified) {
+                updateOfferStatus(offerId, OfferStatus.PENDING);
+            }
+            throw new RuntimeException("Offer update failed! Try again");
+        }
     }
 }

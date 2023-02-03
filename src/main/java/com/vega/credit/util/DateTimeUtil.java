@@ -29,4 +29,15 @@ public class DateTimeUtil {
         }
         return true;
     }
+
+    public LocalDate stringToLocalDate(String stringDate) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date;
+        try {
+            date = LocalDate.parse(stringDate, dateTimeFormatter);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+        return date;
+    }
 }

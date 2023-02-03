@@ -1,5 +1,6 @@
 package com.vega.credit.dao;
 
+import com.vega.credit.enums.LimitType;
 import com.vega.credit.model.Account;
 import com.vega.credit.server.SQL;
 import org.springframework.stereotype.Repository;
@@ -68,6 +69,16 @@ public class AccountDAO {
             System.out.println("Row Inserted");
         } catch (Exception e) {
             System.out.printf("Insertion in db fails for customer id: %s", account.getCustomerId());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void updateAccountLimit(String accountId, LimitType limitType, int newLimit) {
+        try {
+            String queryLimitType = limitType.getLimitType().toLowerCase();
+            String updateQuery = String.format("update %s set %s=%s;", tableName, queryLimitType, newLimit);
+            statement.executeUpdate(updateQuery);
+        } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }
     }

@@ -48,10 +48,7 @@ public class ValidateOffer {
 				throw new ValidationException("Not a valid date format");
 			}
 		} catch(Exception e){
-			//e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}
-
-//        if()
     }
 }

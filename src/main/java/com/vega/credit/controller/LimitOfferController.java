@@ -3,6 +3,7 @@ package com.vega.credit.controller;
 import com.vega.credit.enums.OfferStatus;
 import com.vega.credit.handler.LimitOfferHandler;
 import com.vega.credit.model.Offer;
+import com.vega.credit.util.DateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/offer")
@@ -40,6 +42,9 @@ public class LimitOfferController {
     getActiveLimitOffers(@RequestParam(value = "accountId") String accountId,
                          @RequestParam(value = "activationDate", required = false) String activationDate) {
         try{
+            if(!Optional.ofNullable(activationDate).isPresent()) {
+                activationDate = DateTimeUtil.getCurrentDate();
+            }
             List<Offer> activeLimitOffers =
                     limitOfferHandler.fetchActiveOffers(accountId, activationDate);
             return ResponseEntity.ok().body(activeLimitOffers);

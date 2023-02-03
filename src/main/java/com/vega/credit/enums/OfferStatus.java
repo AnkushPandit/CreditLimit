@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum OfferStatus {
-    ACCEPT("ACCEPTED"),
-    REJECT("REJECTED"),
+    ACCEPT("ACCEPT"),
+    REJECT("REJECT"),
     PENDING("PENDING");
 
     private final String offerStatus;
